@@ -1,0 +1,39 @@
+name: Deploy Travel App to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'travel-app-web/**'
+      - '.github/workflows/travel-app-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: travel-app-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload travel app
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: travel-app-web
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
